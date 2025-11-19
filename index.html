@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR碼掃描應用程式</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <!-- QR掃描庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"
+        integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="./index.css" />
+</head>
+
+<body>
+    <div class="container">
+        <!-- 畫面1: 身份驗證 -->
+        <div id="auth-screen" class="screen active">
+            <h1>歡迎使用</h1>
+            <div class="user-info" id="user-info" style="display: none;">
+                <p>歡迎回來, <span id="user-email"></span>!</p>
+            </div>
+            <!-- 登入表單 -->
+            <div id="login-form">
+                <div class="form-group">
+                    <label for="email">電子郵件</label>
+                    <input type="email" id="email" placeholder="請輸入您的電子郵件" value="test@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" placeholder="請輸入您的密碼" value="password123" />
+                </div>
+                <button id="login-btn">登入</button>
+                <div class="toggle-form">
+                    <button class="toggle-btn" id="show-signup">沒有帳號？註冊</button>
+                </div>
+            </div>
+            <!-- 註冊表單 (初始隱藏) -->
+            <div id="signup-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signup-email">電子郵件</label>
+                    <input type="email" id="signup-email" placeholder="請輸入您的電子郵件" value="test@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">密碼</label>
+                    <input type="password" id="signup-password" placeholder="請設定密碼" value="password123" />
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">確認密碼</label>
+                    <input type="password" id="confirm-password" placeholder="請再次輸入密碼" value="password123" />
+                </div>
+                <button id="signup-btn">註冊</button>
+                <div class="toggle-form">
+                    <button class="toggle-btn" id="show-login">已有帳號？登入</button>
+                </div>
+            </div>
+            <div class="error" id="auth-error"></div>
+            <div class="success" id="auth-success"></div>
+            <div class="loader" id="auth-loader"></div>
+            <!-- 測試憑證 (用於演示) -->
+            <div class="test-data" hidden>
+                <h3>演示憑證 (用於測試):</h3>
+                <p><strong>電子郵件:</strong> test@gmail.com</p>
+                <p><strong>密碼:</strong> password123</p>
+                <p><em>注意：這些將在您的瀏覽器中創建一個臨時帳戶</em></p>
+            </div>
+        </div>
+        <!-- 畫面2: QR掃描器 -->
+        <div id="scanner-screen" class="screen">
+            <!-- 導航列 -->
+            <nav class="navbar">
+                <ul class="nav-tabs">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-tab="scanner-tab">掃描器</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="map-tab">地圖</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <p>登入身份: <span id="scanner-user-email"></span></p>
+            </div>
+            <!-- 掃描器分頁內容 -->
+            <div id="scanner-tab" class="tab-content active">
+                <!-- 地點群組選擇 -->
+                <div class="form-group">
+                    <label for="location-group">地點群組 (Location Group)</label>
+                    <select class="form-control" id="location-group">
+                        <option hidden selected>-- 請選擇 --</option>
+                        <option value="__DEVELOPER__">__DEVELOPER__</option>
+                        <option value="香港天文台">香港天文台</option>
+                        <option value="九龍公園">九龍公園</option>
+                    </select>
+                    <p style="display:none">
+                        <span>已選擇：</span>
+                        <span id="location-group-selected"></span>
+                    </p>
+                </div>
+                <div class="qr-container" id="qr-container">
+                    <div id="reader"></div>
+                    <div id="camera-error" class="camera-error" style="display: none;">
+                        <p>QR碼掃描需要相機權限。</p>
+                        <p>請在提示時允許相機權限。</p>
+                    </div>
+                </div>
+                <div class="result" id="scan-result">掃描QR碼後結果將顯示在此處</div>
+                <div class="test-data" hidden>
+                    <h3>測試QR碼 (點擊模擬掃描):</h3>
+                    <div class="test-qr" data-text="QR001">QR001</div>
+                    <div class="test-qr" data-text="QR002">QR002</div>
+                    <div class="test-qr" data-text="QR003">QR003</div>
+                </div>
+                <button id="scan-btn" disabled>開始掃描</button>
+                <button class="logout-btn" id="logout-btn">登出</button>
+                <div class="loader" id="scan-loader"></div>
+            </div>
+            <!-- 地圖分頁內容 -->
+            <div id="map-tab" class="tab-content">
+                <div style="margin-bottom:10px">
+                    <span>已選擇：</span>
+                    <span class="location-group-selected"></span>
+                </div>
+                <div class="map-controls">
+                    <button id="refresh-map" class="map-btn">刷新地圖</button>
+                    <button id="reset-map-view" class="map-btn">重置視圖</button>
+                </div>
+                <div id="map-container">
+                    <div id="map"></div>
+                    <div id="map-loading" class="map-loading">載入地圖中...</div>
+                </div>
+                <div class="map-info-panel">
+                    <h3>問題列表</h3>
+                    <div class="marker-list" id="marker-list">
+                        <!-- 標記列表將在這裡動態生成 -->
+                    </div>
+                    <div class="status-bar">
+                        <span id="marker-count">載入中...</span>
+                        <span id="map-center">中心: 載入中...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="./index.js" defer></script>
+</body>
+
+</html>

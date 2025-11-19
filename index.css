@@ -1,0 +1,354 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.screen {
+    padding: 30px;
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+input,
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border 0.3s;
+    background-color: white;
+}
+
+input:focus,
+.form-control:focus {
+    border-color: #2575fc;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 10px;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.logout-btn {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+}
+
+.qr-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    min-height: 300px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    align-items: center;
+    flex-direction: column;
+}
+
+#reader {
+    width: 100%;
+    max-width: 300px;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    min-height: 60px;
+}
+
+.error {
+    color: #e74c3c;
+    background-color: #ffeaea;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: none;
+}
+
+.success {
+    color: #27ae60;
+    background-color: #eafaf1;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: none;
+}
+
+.user-info {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2575fc;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+    margin: 20px auto;
+    display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.toggle-form {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: #2575fc;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+    width: auto;
+    padding: 0;
+}
+
+.camera-error {
+    text-align: center;
+    color: #e74c3c;
+    padding: 20px;
+}
+
+.test-data {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e8f4fd;
+    border-radius: 8px;
+}
+
+.test-data h3 {
+    margin-bottom: 10px;
+    color: #2575fc;
+}
+
+.test-qr {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #2575fc;
+    color: white;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+/* 導航列樣式 */
+.navbar {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    padding: 15px 0;
+    margin: -30px -30px 20px -30px;
+}
+
+.nav-tabs {
+    display: flex;
+    list-style: none;
+    padding: 0 20px;
+    margin: 0;
+}
+
+.nav-item {
+    margin-right: 10px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-weight: 600;
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link:not(.active):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 分頁內容樣式 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 地圖容器樣式 */
+#map-container {
+    height: 300px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+    background: #f0f0f0;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+.map-info-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.marker-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.marker-item {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    transition: background-color 0.2s;
+}
+
+.marker-item:hover {
+    background-color: #f8f9fa;
+}
+
+.marker-item.active {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+}
+
+.coordinates {
+    font-family: monospace;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.map-loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.map-controls {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.map-btn {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 14px;
+    background: #2575fc;
+}
+
+.map-btn:hover {
+    background: #1a6beb;
+}
