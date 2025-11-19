@@ -1,13 +1,12 @@
 // Firebase配置
 const firebaseConfig = {
-    apiKey: "AIzaSyCeJKqoz3kiiM8g4gRpZli_-c0-XRpaPII",
-    authDomain: "hko-subsystem-qrcode.firebaseapp.com",
-    projectId: "hko-subsystem-qrcode",
-    storageBucket: "hko-subsystem-qrcode.firebasestorage.app",
-    messagingSenderId: "72067638904",
-    appId: "1:72067638904:web:9a5fd1d728435e6ce3ef8d"
+  apiKey: "AIzaSyArHHdiYqWFXJu1OQBXucP_5n5cYGvcHic",
+  authDomain: "mcq-server-20251119.firebaseapp.com",
+  projectId: "mcq-server-20251119",
+  storageBucket: "mcq-server-20251119.firebasestorage.app",
+  messagingSenderId: "607976163854",
+  appId: "1:607976163854:web:4352b12b2455a34eb78a5f"
 };
-// 初始化Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 // DOM元素
@@ -651,4 +650,5 @@ resetMapViewBtn.addEventListener('click', function () {
 
 // QR掃描相關變數
 let html5QrcodeScanner = null;
+
 let isScanning = false;
