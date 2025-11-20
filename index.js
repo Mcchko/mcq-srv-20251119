@@ -526,6 +526,7 @@ function initializeMap() {
 function loadGeoinfo() {
     getGPSLocation()
         .then(gpsInfo => {
+            alert(JSON.stringify(gpsInfo));
             fetch(
                 `https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Map/GetDataByLocationGroup?地點群組=${locationGroupSelect.value}&用戶地理資訊=${JSON.stringify({
                     經度: gpsInfo.latitude,
