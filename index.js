@@ -309,8 +309,6 @@ function onScanSuccess(decodedText, decodedResult) {
                 "誤差": gpsInfo.accuracy,
                 "地點群組": selectedLocationGroup
             };
-            alert(JSON.stringify(postData))
-            alert(JSON.stringify(gpsInfo))
             fetch("https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Scanner/CreateRecord", {
                 method: "POST",
                 headers: {
