@@ -306,6 +306,7 @@ function onScanSuccess(decodedText, decodedResult) {
                 "序號": decodedText,
                 "經度": gpsInfo.latitude ? gpsInfo.latitude.toFixed(8) : null,
                 "緯度": gpsInfo.longitude ? gpsInfo.longitude.toFixed(8) : null,
+                "誤差": gpsInfo.accuracy ? gpsInfo.accuracy.toFixed(1) : null,
                 "地點群組": selectedLocationGroup
             };
             fetch("https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Scanner/CreateRecord", {
