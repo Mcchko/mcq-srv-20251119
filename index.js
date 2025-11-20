@@ -1,12 +1,13 @@
 // Firebase配置
 const firebaseConfig = {
-  apiKey: "AIzaSyArHHdiYqWFXJu1OQBXucP_5n5cYGvcHic",
-  authDomain: "mcq-server-20251119.firebaseapp.com",
-  projectId: "mcq-server-20251119",
-  storageBucket: "mcq-server-20251119.firebasestorage.app",
-  messagingSenderId: "607976163854",
-  appId: "1:607976163854:web:4352b12b2455a34eb78a5f"
+    apiKey: "AIzaSyArHHdiYqWFXJu1OQBXucP_5n5cYGvcHic",
+    authDomain: "mcq-server-20251119.firebaseapp.com",
+    projectId: "mcq-server-20251119",
+    storageBucket: "mcq-server-20251119.firebasestorage.app",
+    messagingSenderId: "607976163854",
+    appId: "1:607976163854:web:4352b12b2455a34eb78a5f"
 };
+// 初始化Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 // DOM元素
@@ -98,7 +99,8 @@ loginBtn.addEventListener('click', () => {
     loginBtn.disabled = true;
     clearAuthMessages();
     auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
+        .then(async (userCredential) => {
+            sessionStorage.setItem("SESSION_ID", await userCredential.user.getIdToken());
             authLoader.style.display = 'none';
             loginBtn.disabled = false;
             showSuccess('登入成功！');
@@ -133,6 +135,7 @@ signupBtn.addEventListener('click', () => {
     authLoader.style.display = 'block';
     signupBtn.disabled = true;
     clearAuthMessages();
+    console.log(email, password)
     auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             authLoader.style.display = 'none';
@@ -305,7 +308,7 @@ function onScanSuccess(decodedText, decodedResult) {
                 "緯度": gpsInfo.longitude ? gpsInfo.longitude.toFixed(8) : null,
                 "地點群組": selectedLocationGroup
             };
-            fetch("https://subsystem-qrcode-99e8f79ba0bd.herokuapp.com/action/QrCode/CreateRecord", {
+            fetch("https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/QrCode/CreateRecord", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -521,7 +524,15 @@ function initializeMap() {
 
 // 載入地理信息
 function loadGeoinfo() {
-    fetch(`https://subsystem-qrcode-99e8f79ba0bd.herokuapp.com/action/Map/GetGeoinfo?地點群組=${locationGroupSelect.value}`)
+    fetch(
+        `https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Map/GetDataByLocationGroup?地點群組=${locationGroupSelect.value}`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${sessionStorage.getItem("SESSION_ID")}`  // Add the Authorization header here
+            },
+        }
+    )
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP錯誤! 狀態: ${response.status}`);
@@ -533,31 +544,13 @@ function loadGeoinfo() {
                 createMarkers(json.data.geoinfo);
             } else {
                 console.warn('API返回的數據格式不正確:', json);
-                // 如果API返回的格式不符，使用示例數據
-                createMarkers(getSampleGeoinfo());
+                alert('API返回的數據格式不正確:', json);
             }
         })
         .catch(error => {
             console.error('載入地理信息錯誤:', error);
-            // 如果API請求失敗，使用示例數據
-            createMarkers(getSampleGeoinfo());
+            alert('載入地理信息錯誤:', error);
         });
-}
-
-// 獲取示例地理信息（備用）
-function getSampleGeoinfo() {
-    return [
-        { QUESTION_1: { lat: 22.2793, lng: 114.1629 } },  // 香港島
-        { QUESTION_2: { lat: 22.3193, lng: 114.1694 } },  // 九龍
-        { QUESTION_3: { lat: 22.3964, lng: 114.1095 } },  // 新界
-        { QUESTION_4: { lat: 22.2864, lng: 114.1491 } },  // 中環
-        { QUESTION_5: { lat: 22.3027, lng: 114.1773 } },  // 銅鑼灣
-        { QUESTION_6: { lat: 22.3361, lng: 114.1554 } },  // 旺角
-        { QUESTION_7: { lat: 22.3276, lng: 114.1875 } },  // 觀塘
-        { QUESTION_8: { lat: 22.4458, lng: 114.0227 } },  // 元朗
-        { QUESTION_9: { lat: 22.3777, lng: 114.1974 } },  // 沙田
-        { QUESTION_10: { lat: 22.2477, lng: 114.1573 } }  // 香港仔
-    ];
 }
 
 // 創建標記
@@ -568,6 +561,7 @@ function createMarkers(geoinfo) {
     markerList.innerHTML = '';
 
     // 為每個地理信息點創建標記
+    console.log(geoinfo)
     geoinfo.forEach((item, index) => {
         const questionKey = Object.keys(item)[0];
         const coords = item[questionKey];
@@ -650,5 +644,4 @@ resetMapViewBtn.addEventListener('click', function () {
 
 // QR掃描相關變數
 let html5QrcodeScanner = null;
-
 let isScanning = false;
