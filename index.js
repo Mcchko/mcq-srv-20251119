@@ -308,7 +308,7 @@ function onScanSuccess(decodedText, decodedResult) {
                 "緯度": gpsInfo.longitude ? gpsInfo.longitude.toFixed(8) : null,
                 "地點群組": selectedLocationGroup
             };
-            fetch("https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/QrCode/CreateRecord", {
+            fetch("https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Scanner/CreateRecord", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -526,14 +526,8 @@ function initializeMap() {
 function loadGeoinfo() {
     getGPSLocation()
         .then(gpsInfo => {
-            alert(JSON.stringify(gpsInfo));
             fetch(
-                `https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Map/GetDataByLocationGroup?地點群組=${locationGroupSelect.value}&用戶地理資訊=${JSON.stringify({
-                    經度: gpsInfo.latitude,
-                    緯度: gpsInfo.longitude,
-                    誤差: gpsInfo.accuracy
-                })
-                }`,
+                `https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Map/GetDataByLocationGroup?地點群組=${locationGroupSelect.value}&用戶經度=${gpsInfo.latitude}&用戶緯度=${gpsInfo.longitude}&用戶誤差=${gpsInfo.accuracy}`,
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -570,7 +564,6 @@ function createMarkers(geoinfo) {
     markerList.innerHTML = '';
 
     // 為每個地理信息點創建標記
-    console.log(geoinfo)
     geoinfo.forEach((item, index) => {
         const questionKey = Object.keys(item)[0];
         const coords = item[questionKey];
