@@ -312,6 +312,7 @@ function onScanSuccess(decodedText, decodedResult) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("SESSION_ID")}`  // Add the Authorization header here
                 },
                 body: JSON.stringify(postData)
             })
