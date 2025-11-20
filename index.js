@@ -524,38 +524,40 @@ function initializeMap() {
 
 // 載入地理信息
 function loadGeoinfo() {
-    const gps = await getGPSLocation();
-    fetch(
-        `https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Map/GetDataByLocationGroup?地點群組=${locationGroupSelect.value}&用戶地理資訊=${JSON.stringify({
-            經度: gps.latitude,
-            緯度: gps.longitude,
-            誤差: gps.accuracy
-        })
-        }`,
-        {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${sessionStorage.getItem("SESSION_ID")}`  // Add the Authorization header here
-            },
-        }
-    )
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP錯誤! 狀態: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(json => {
-            if (json && json.data.geoinfo) {
-                createMarkers(json.data.geoinfo);
-            } else {
-                console.warn('API返回的數據格式不正確:', json);
-                alert('API返回的數據格式不正確:', json);
-            }
-        })
-        .catch(error => {
-            console.error('載入地理信息錯誤:', error);
-            alert('載入地理信息錯誤:', error);
+    getGPSLocation()
+        .then(gpsInfo => {
+            fetch(
+                `https://mcq-server-20251119-9c75fceb3200.herokuapp.com/action/Map/GetDataByLocationGroup?地點群組=${locationGroupSelect.value}&用戶地理資訊=${JSON.stringify({
+                    經度: gpsInfo.latitude,
+                    緯度: gpsInfo.longitude,
+                    誤差: gpsInfo.accuracy
+                })
+                }`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${sessionStorage.getItem("SESSION_ID")}`  // Add the Authorization header here
+                    },
+                }
+            )
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP錯誤! 狀態: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(json => {
+                    if (json && json.data.geoinfo) {
+                        createMarkers(json.data.geoinfo);
+                    } else {
+                        console.warn('API返回的數據格式不正確:', json);
+                        alert('API返回的數據格式不正確:', json);
+                    }
+                })
+                .catch(error => {
+                    console.error('載入地理信息錯誤:', error);
+                    alert('載入地理信息錯誤:', error);
+                });
         });
 }
 
